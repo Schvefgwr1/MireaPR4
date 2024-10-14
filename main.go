@@ -1,8 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math"
+	"os"
+	"sort"
+	"strings"
+	"unicode"
 )
 
 func main() {
@@ -50,146 +55,353 @@ func main() {
 	}
 }
 
+func fromBaseToDecimal(number string, base int) int {
+	var decimal int
+	for _, digit := range strings.ToUpper(number) {
+		var value int
+		if digit >= '0' && digit <= '9' {
+			value = int(digit - '0')
+		} else {
+			value = int(digit - 'A' + 10)
+		}
+		decimal = decimal*base + value
+	}
+	return decimal
+}
+
+func fromDecimalToBase(decimal, base int) string {
+	if decimal == 0 {
+		return "0"
+	}
+
+	var result string
+	for decimal > 0 {
+		remainder := decimal % base
+		var digit rune
+		if remainder < 10 {
+			digit = rune('0' + remainder)
+		} else {
+			digit = rune('A' + remainder - 10)
+		}
+		result = string(digit) + result
+		decimal /= base
+	}
+	return result
+}
+
 func task1_1() {
-	fmt.Println("Enter a 4-th value")
-	var number int
-	fmt.Scanf("%d", &number)
-	res := number/1000 + number%1000/100 + number%100/10 + number%10
-	fmt.Println(res)
+	var number string
+	var fromBase, toBase int
+
+	fmt.Print("Введите число: ")
+	fmt.Scanf("%s", &number)
+	fmt.Print("Введите исходную систему счисления (2-36): ")
+	fmt.Scanf("%d", &fromBase)
+	fmt.Print("Введите конечную систему счисления (2-36): ")
+	fmt.Scanf("%d", &toBase)
+
+	decimal := fromBaseToDecimal(number, fromBase)
+	result := fromDecimalToBase(decimal, toBase)
+
+	fmt.Printf("Число %s из системы %d в системе %d: %s\n", number, fromBase, toBase, result)
 }
 
 func task1_2() {
-	var syst string
-	var temp float32
-	fmt.Println("Enter a base temperature system: C/F")
-	fmt.Scanf("%s", &syst)
-	fmt.Println(syst)
-	switch syst {
-	case "C":
-		fmt.Println("Enter a value in Celsius")
-		fmt.Scanf("%f", &temp)
-		fmt.Printf("Temperature in Fahrenheit: %.2f\n", temp*1.8+32)
-	case "F":
-		fmt.Println("Enter a value in Fahrenheit")
-		fmt.Scanf("%f", &temp)
-		fmt.Printf("Temperature in Celsia: %.2f\n", (temp-32)/1.8)
-	default:
-		fmt.Println("Incorrect system, please restart the program and retry entering")
+	var a, b, c float64
+
+	fmt.Print("Введите коэффициент a: ")
+	fmt.Scanf("%f", &a)
+	fmt.Print("Введите коэффициент b: ")
+	fmt.Scanf("%f", &b)
+	fmt.Print("Введите коэффициент c: ")
+	fmt.Scanf("%f", &c)
+
+	if a == 0 {
+		if b != 0 {
+			x := -c / b
+			fmt.Printf("Линейное уравнение. Корень: %.2f\n", x)
+		} else {
+			if c == 0 {
+				fmt.Println("Бесконечное множество решений.")
+			} else {
+				fmt.Println("Нет решений.")
+			}
+		}
+		return
+	}
+
+	discriminant := b*b - 4*a*c
+
+	if discriminant > 0 {
+		x1 := (-b + math.Sqrt(discriminant)) / (2 * a)
+		x2 := (-b - math.Sqrt(discriminant)) / (2 * a)
+		fmt.Printf("Два действительных корня: x1 = %.2f, x2 = %.2f\n", x1, x2)
+	} else if discriminant == 0 {
+		x := -b / (2 * a)
+		fmt.Printf("Один действительный корень: x = %.2f\n", x)
+	} else {
+		realPart := -b / (2 * a)
+		imagPart := math.Sqrt(-discriminant) / (2 * a)
+		fmt.Printf("Комплексные корни: x1 = %.2f+%.2fi, x2 = %.2f-%.2fi\n", realPart, imagPart, realPart, imagPart)
 	}
 }
 
 func task1_3() {
-	var length int
-	var number float32
-	fmt.Println("Enter a length of array:")
-	fmt.Scanf("%d", &length)
-	arr := make([]float32, length)
-	for i := 0; i < length; i++ {
-		fmt.Println("Enter a number of array: ")
-		fmt.Scanf("%f", &number)
-		arr[i] = number * 2
+	var n int
+	fmt.Print("Введите количество элементов массива: ")
+	fmt.Scanf("%d", &n)
+
+	numbers := make([]int, n)
+	fmt.Println("Введите элементы массива:")
+	for i := 0; i < n; i++ {
+		fmt.Scanf("%d", &numbers[i])
 	}
-	fmt.Println("Array: ", arr)
+
+	sort.Slice(numbers, func(i, j int) bool {
+		return math.Abs(float64(numbers[i])) < math.Abs(float64(numbers[j]))
+	})
+
+	fmt.Println("Отсортированный массив по модулю:", numbers)
+}
+
+func mergeSortedArrays(a, b []int) []int {
+	var merged []int
+	i, j := 0, 0
+
+	for i < len(a) && j < len(b) {
+		if a[i] < b[j] {
+			merged = append(merged, a[i])
+			i++
+		} else {
+			merged = append(merged, b[j])
+			j++
+		}
+	}
+
+	for i < len(a) {
+		merged = append(merged, a[i])
+		i++
+	}
+	for j < len(b) {
+		merged = append(merged, b[j])
+		j++
+	}
+
+	return merged
 }
 
 func task1_4() {
-	var str string
-	flag := false
-	for !flag {
-		fmt.Println("Enter a new part of string or \"end\" for end of program")
-		var partOfStr string
-		fmt.Scanf("%s", &partOfStr)
-		if partOfStr == "end" {
-			flag = true
-		} else {
-			str += partOfStr
-			str += " "
+	var n, m int
+
+	fmt.Print("Введите количество элементов первого массива: ")
+	fmt.Scanf("%d", &n)
+	a := make([]int, n)
+	fmt.Println("Введите элементы первого отсортированного массива:")
+	for i := 0; i < n; i++ {
+		fmt.Scanf("%d", &a[i])
+	}
+
+	fmt.Print("Введите количество элементов второго массива: ")
+	fmt.Scanf("%d", &m)
+	b := make([]int, m)
+	fmt.Println("Введите элементы второго отсортированного массива:")
+	for i := 0; i < m; i++ {
+		fmt.Scanf("%d", &b[i])
+	}
+
+	merged := mergeSortedArrays(a, b)
+	fmt.Println("Слияние двух отсортированных массивов:", merged)
+}
+
+func indexOf(haystack, needle string) int {
+	if len(needle) == 0 {
+		return 0
+	}
+	if len(needle) > len(haystack) {
+		return -1
+	}
+
+	for i := 0; i <= len(haystack)-len(needle); i++ {
+		match := true
+		for j := 0; j < len(needle); j++ {
+			if haystack[i+j] != needle[j] {
+				match = false
+				break
+			}
+		}
+		if match {
+			return i
 		}
 	}
-	fmt.Println("String: ", str)
-}
-
-type Point struct {
-	x float64
-	y float64
-}
-
-func (p Point) DistanceTo(other *Point) float64 {
-	return math.Sqrt(math.Pow(other.x-p.x, 2) + math.Pow(other.y-p.y, 2))
+	return -1
 }
 
 func task1_5() {
-	p1 := Point{x: 0, y: 0}
-	p2 := Point{x: 0, y: 0}
-	fmt.Println("Введите x и y в формате: x_1 y_1")
-	fmt.Scanf("%f %f", &p1.x, &p1.y)
-	fmt.Println("Введите x и y в формате: x_2 y_2")
-	fmt.Scanf("%f %f", &p2.x, &p2.y)
-	distance := p1.DistanceTo(&p2)
-	fmt.Printf("Расстояние между точками: %.2f\n", distance)
+	var haystack, needle string
+
+	fmt.Print("Введите основную строку: ")
+	fmt.Scanf("%s", &haystack)
+	fmt.Print("Введите подстроку для поиска: ")
+	fmt.Scanf("%s", &needle)
+
+	index := indexOf(haystack, needle)
+	fmt.Println("Индекс первого вхождения подстроки:", index)
 }
 
 func task2_1() {
-	var num int
-	fmt.Println("Введите число")
-	fmt.Scanf("%d", &num)
-	if num%2 == 0 {
-		fmt.Println("Четное")
-	} else {
-		fmt.Println("Нечетное")
+	var a, b float64
+	var operator string
+
+	fmt.Print("Введите первое число: ")
+	fmt.Scanf("%f", &a)
+	fmt.Print("Введите оператор (+, -, *, /, ^, %): ")
+	fmt.Scanf("%s", &operator)
+	fmt.Print("Введите второе число: ")
+	fmt.Scanf("%f", &b)
+
+	switch operator {
+	case "+":
+		fmt.Printf("Результат: %.2f\n", a+b)
+	case "-":
+		fmt.Printf("Результат: %.2f\n", a-b)
+	case "*":
+		fmt.Printf("Результат: %.2f\n", a*b)
+	case "/":
+		if b == 0 {
+			fmt.Println("Ошибка: Деление на ноль.")
+		} else {
+			fmt.Printf("Результат: %.2f\n", a/b)
+		}
+	case "^":
+		fmt.Printf("Результат: %.2f\n", math.Pow(a, b))
+	case "%":
+		ai, bi := int(a), int(b)
+		if bi == 0 {
+			fmt.Println("Ошибка: Деление на ноль.")
+		} else {
+			fmt.Printf("Результат: %d\n", ai%bi)
+		}
+	default:
+		fmt.Println("Ошибка: Недопустимый оператор.")
 	}
+}
+
+func isPalindrome(s string) bool {
+	var cleaned []rune
+	for _, r := range s {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			cleaned = append(cleaned, unicode.ToLower(r))
+		}
+	}
+
+	n := len(cleaned)
+	for i := 0; i < n/2; i++ {
+		if cleaned[i] != cleaned[n-1-i] {
+			return false
+		}
+	}
+	return true
 }
 
 func task2_2() {
-	var year int
-	fmt.Println("Введите номер года")
-	fmt.Scanf("%d", &year)
-	if (year%4 == 0 && year%100 != 0) || year%400 == 0 {
-		fmt.Println("Високосный")
+	var input string
+	fmt.Print("Введите строку для проверки на палиндром: ")
+	fmt.Scanf("%[^\n]s", &input)
+	if isPalindrome(input) {
+		fmt.Println("true")
 	} else {
-		fmt.Println("Не високосный")
+		fmt.Println("false")
 	}
+}
+
+type Segment struct {
+	start, end float64
 }
 
 func task2_3() {
-	var x1, x2, x3 float32
-	fmt.Println("Введите три числа через пробел")
-	fmt.Scanf("%f %f, %f", &x1, &x2, &x3)
-	fmt.Println("Наибольшее число")
-	if x1 >= x2 && x1 >= x3 {
-		fmt.Println(x1)
-	} else if x2 >= x1 && x2 >= x3 {
-		fmt.Println(x2)
-	} else {
-		fmt.Println(x3)
+	var segments [3]Segment
+
+	for i := 0; i < 3; i++ {
+		fmt.Printf("Введите начальную и конечную точку %d-го отрезка: ", i+1)
+		fmt.Scanf("%f %f", &segments[i].start, &segments[i].end)
+		if segments[i].start > segments[i].end {
+			segments[i].start, segments[i].end = segments[i].end, segments[i].start
+		}
 	}
+	maxStart := segments[0].start
+	for i := 1; i < 3; i++ {
+		if segments[i].start > maxStart {
+			maxStart = segments[i].start
+		}
+	}
+
+	minEnd := segments[0].end
+	for i := 1; i < 3; i++ {
+		if segments[i].end < minEnd {
+			minEnd = segments[i].end
+		}
+	}
+
+	if maxStart <= minEnd {
+		fmt.Println("true")
+	} else {
+		fmt.Println("false")
+	}
+}
+
+func filterWord(word string) string {
+	filtered := []rune{}
+	for _, r := range word {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			filtered = append(filtered, r)
+		}
+	}
+	return string(filtered)
 }
 
 func task2_4() {
-	var age int
-	fmt.Println("Введите возраст")
-	fmt.Scanf("%d", &age)
-	fmt.Println("Возрастная группа: ")
-	switch {
-	case age < 12:
-		fmt.Println("Ребенок")
-	case age >= 12 && age < 18:
-		fmt.Println("Подросток")
-	case age >= 18 && age < 65:
-		fmt.Println("Взрослый")
-	default:
-		fmt.Println("Пожилой")
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Введите предложение: ")
+	sentence, _ := reader.ReadString('\n')
+
+	words := strings.Fields(sentence)
+
+	var longestWord string
+	maxLength := 0
+
+	for _, word := range words {
+		filteredWord := filterWord(word)
+		if len(filteredWord) > maxLength {
+			longestWord = filteredWord
+			maxLength = len(filteredWord)
+		}
+	}
+	if maxLength == 0 {
+		fmt.Println("Нет слов в предложении.")
+	} else {
+		fmt.Printf("Самое длинное слово: %s\n", longestWord)
 	}
 }
 
+func isLeapYear(year int) bool {
+	if year%4 != 0 {
+		return false
+	} else if year%100 != 0 {
+		return true
+	} else if year%400 == 0 {
+		return true
+	}
+	return false
+}
+
 func task2_5() {
-	var num int
-	fmt.Println("Введите число")
-	fmt.Scanf("%d", &num)
-	if num%5 == 0 && num%3 == 0 {
-		fmt.Println("Делится")
+	var year int
+	fmt.Print("Введите год: ")
+	fmt.Scanf("%d", &year)
+	if isLeapYear(year) {
+		fmt.Println("true")
 	} else {
-		fmt.Println("Не делится")
+		fmt.Println("false")
 	}
 }
 
@@ -202,88 +414,128 @@ func factorial(n int) int {
 
 func task3_1() {
 	var n int
-	fmt.Println("Введите число:")
+	fmt.Print("Введите максимальное число для чисел Фибоначчи: ")
 	fmt.Scanf("%d", &n)
-	result := factorial(n)
-	fmt.Printf("Факториал числа %d равен %d\n", n, result)
+	if n < 0 {
+		fmt.Println("Числа Фибоначчи не могут быть отрицательными.")
+		return
+	}
+	a, b := 0, 1
+	for a <= n {
+		fmt.Print(a, " ")
+		a, b = b, a+b
+	}
+	fmt.Println()
 }
 
-func fibonacci(n int) []int {
-	fib := make([]int, n)
-	if n >= 1 {
-		fib[0] = 0
+func isPrime(num int) bool {
+	if num < 2 {
+		return false
 	}
-	if n >= 2 {
-		fib[1] = 1
+	sqrt := int(math.Sqrt(float64(num)))
+	for i := 2; i <= sqrt; i++ {
+		if num%i == 0 {
+			return false
+		}
 	}
-	for i := 2; i < n; i++ {
-		fib[i] = fib[i-1] + fib[i-2]
-	}
-	return fib
+	return true
 }
 
 func task3_2() {
-	var n int
-	fmt.Println("Введите число:")
-	fmt.Scanf("%d", &n)
-	result := fibonacci(n)
-	fmt.Println("Первые ", n, " чисел Фибонначи: ", result)
+	var start, end int
+	fmt.Print("Введите начальное число диапазона: ")
+	fmt.Scanf("%d", &start)
+	fmt.Print("Введите конечное число диапазона: ")
+	fmt.Scanf("%d", &end)
+	if start > end {
+		start, end = end, start
+	}
+	fmt.Println("Простые числа в диапазоне:")
+	for i := start; i <= end; i++ {
+		if isPrime(i) {
+			fmt.Print(i, " ")
+		}
+	}
+	fmt.Println()
 }
 
-func readArray() *[]int {
-	var arr []int
-	var elem, n int
-	fmt.Print("Введите количество чисел в масиве: ")
-	fmt.Scan(&n)
-	fmt.Println("Введите исходный массив:")
-	for i := 0; i < n; i++ {
-		fmt.Scan(&elem)
-		arr = append(arr, elem)
+func isArmstrong(num int) bool {
+	if num < 0 {
+		return false
 	}
-	return &arr
+
+	n := num
+	count := 0
+	for n != 0 {
+		n /= 10
+		count++
+	}
+
+	sum := 0
+	n = num
+	for n != 0 {
+		digit := n % 10
+		sum += int(math.Pow(float64(digit), float64(count)))
+		n /= 10
+	}
+
+	return sum == num
 }
 
 func task3_3() {
-	arr := *readArray()
-	for i := 0; i < len(arr)/2; i++ {
-		arr[i], arr[len(arr)-1-i] = arr[len(arr)-1-i], arr[i]
+	var start, end int
+	fmt.Print("Введите начальное число диапазона: ")
+	fmt.Scanf("%d", &start)
+	fmt.Print("Введите конечное число диапазона: ")
+	fmt.Scanf("%d", &end)
+
+	if start > end {
+		start, end = end, start
 	}
 
-	fmt.Println("Перевернутый массив:", arr)
+	fmt.Println("Числа Армстронга в диапазоне:")
+	for i := start; i <= end; i++ {
+		if isArmstrong(i) {
+			fmt.Print(i, " ")
+		}
+	}
+	fmt.Println()
+}
+
+func reverseString(s string) string {
+	runes := []rune(s)
+	n := len(runes)
+	for i := 0; i < n/2; i++ {
+		runes[i], runes[n-1-i] = runes[n-1-i], runes[i]
+	}
+	return string(runes)
 }
 
 func task3_4() {
-	var n int
-	fmt.Print("Введите число для поиска простых чисел: ")
-	fmt.Scan(&n)
+	var input string
+	fmt.Print("Введите строку для реверса: ")
+	fmt.Scanf("%[^\n]s", &input)
+	reversed := reverseString(input)
+	fmt.Println("Реверс строки:", reversed)
+}
 
-	isPrime := func(num int) bool {
-		if num < 2 {
-			return false
-		}
-		for i := 2; i*i <= num; i++ {
-			if num%i == 0 {
-				return false
-			}
-		}
-		return true
+func gcd(a, b int) int {
+	for b != 0 {
+		a, b = b, a%b
 	}
-
-	primes := []int{}
-	for i := 2; i <= n; i++ {
-		if isPrime(i) {
-			primes = append(primes, i)
-		}
+	if a < 0 {
+		return -a
 	}
-
-	fmt.Println("Простые числа до", n, ":", primes)
+	return a
 }
 
 func task3_5() {
-	arr := *readArray()
-	sum := 0
-	for _, num := range arr {
-		sum += num
-	}
-	fmt.Println("Сумма чисел в массиве:", sum)
+	var a, b int
+	fmt.Print("Введите первое число: ")
+	fmt.Scanf("%d", &a)
+	fmt.Print("Введите второе число: ")
+	fmt.Scanf("%d", &b)
+
+	result := gcd(a, b)
+	fmt.Println("НОД:", result)
 }
