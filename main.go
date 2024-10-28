@@ -2,288 +2,219 @@ package main
 
 import (
 	"fmt"
-	"math"
 )
 
 func main() {
-	var taskId, moduleId int
-	fmt.Println("Введите номер модуля")
-	fmt.Scanf("%d\n", &moduleId)
+	var taskId int
 	fmt.Println("Введите номер задачи")
 	fmt.Scanf("%d\n", &taskId)
-	xy := fmt.Sprintf("%d_%d", moduleId, taskId)
-	switch xy {
-	case "1_1":
-		task1_1()
-	case "1_2":
-		task1_2()
-	case "1_3":
-		task1_3()
-	case "1_4":
-		task1_4()
-	case "1_5":
-		task1_5()
-	case "2_1":
-		task2_1()
-	case "2_2":
-		task2_2()
-	case "2_3":
-		task2_3()
-	case "2_4":
-		task2_4()
-	case "2_5":
-		task2_5()
-	case "3_1":
-		task3_1()
-	case "3_2":
-		task3_2()
-	case "3_3":
-		task3_3()
-	case "3_4":
-		task3_4()
-	case "3_5":
-		task3_5()
-
+	switch taskId {
+	case 1:
+		task1()
+	case 2:
+		task2()
+	case 3:
+		task3()
+	case 4:
+		task4()
+	case 5:
+		task5()
+	case 6:
+		task6()
+	case 7:
+		task7()
+	case 8:
+		task8()
+	case 9:
+		task9()
+	case 10:
+		task10()
 	default:
-		fmt.Printf("%d задача в модуле %d не найдена\n", taskId, moduleId)
-
+		fmt.Printf("%d задача не найдена\n", taskId)
 	}
 }
 
-func task1_1() {
-	fmt.Println("Enter a 4-th value")
-	var number int
-	fmt.Scanf("%d", &number)
-	res := number/1000 + number%1000/100 + number%100/10 + number%10
-	fmt.Println(res)
+func triangleArea(base float64, height float64) float64 {
+	return 0.5 * base * height
 }
 
-func task1_2() {
-	var syst string
-	var temp float32
-	fmt.Println("Enter a base temperature system: C/F")
-	fmt.Scanf("%s", &syst)
-	fmt.Println(syst)
-	switch syst {
-	case "C":
-		fmt.Println("Enter a value in Celsius")
-		fmt.Scanf("%f", &temp)
-		fmt.Printf("Temperature in Fahrenheit: %.2f\n", temp*1.8+32)
-	case "F":
-		fmt.Println("Enter a value in Fahrenheit")
-		fmt.Scanf("%f", &temp)
-		fmt.Printf("Temperature in Celsia: %.2f\n", (temp-32)/1.8)
-	default:
-		fmt.Println("Incorrect system, please restart the program and retry entering")
-	}
+func task1() {
+	var base, height float64
+	fmt.Print("Введите основание треугольника: ")
+	fmt.Scanf("%f", &base)
+	fmt.Print("Введите высоту треугольника: ")
+	fmt.Scanf("%f", &height)
+	fmt.Println("Площадь треугольника:", triangleArea(base, height))
 }
 
-func task1_3() {
-	var length int
-	var number float32
-	fmt.Println("Enter a length of array:")
-	fmt.Scanf("%d", &length)
-	arr := make([]float32, length)
-	for i := 0; i < length; i++ {
-		fmt.Println("Enter a number of array: ")
-		fmt.Scanf("%f", &number)
-		arr[i] = number * 2
-	}
-	fmt.Println("Array: ", arr)
-}
-
-func task1_4() {
-	var str string
-	flag := false
-	for !flag {
-		fmt.Println("Enter a new part of string or \"end\" for end of program")
-		var partOfStr string
-		fmt.Scanf("%s", &partOfStr)
-		if partOfStr == "end" {
-			flag = true
-		} else {
-			str += partOfStr
-			str += " "
-		}
-	}
-	fmt.Println("String: ", str)
-}
-
-type Point struct {
-	x float64
-	y float64
-}
-
-func (p Point) DistanceTo(other *Point) float64 {
-	return math.Sqrt(math.Pow(other.x-p.x, 2) + math.Pow(other.y-p.y, 2))
-}
-
-func task1_5() {
-	p1 := Point{x: 0, y: 0}
-	p2 := Point{x: 0, y: 0}
-	fmt.Println("Введите x и y в формате: x_1 y_1")
-	fmt.Scanf("%f %f", &p1.x, &p1.y)
-	fmt.Println("Введите x и y в формате: x_2 y_2")
-	fmt.Scanf("%f %f", &p2.x, &p2.y)
-	distance := p1.DistanceTo(&p2)
-	fmt.Printf("Расстояние между точками: %.2f\n", distance)
-}
-
-func task2_1() {
-	var num int
-	fmt.Println("Введите число")
-	fmt.Scanf("%d", &num)
-	if num%2 == 0 {
-		fmt.Println("Четное")
-	} else {
-		fmt.Println("Нечетное")
-	}
-}
-
-func task2_2() {
-	var year int
-	fmt.Println("Введите номер года")
-	fmt.Scanf("%d", &year)
-	if (year%4 == 0 && year%100 != 0) || year%400 == 0 {
-		fmt.Println("Високосный")
-	} else {
-		fmt.Println("Не високосный")
-	}
-}
-
-func task2_3() {
-	var x1, x2, x3 float32
-	fmt.Println("Введите три числа через пробел")
-	fmt.Scanf("%f %f, %f", &x1, &x2, &x3)
-	fmt.Println("Наибольшее число")
-	if x1 >= x2 && x1 >= x3 {
-		fmt.Println(x1)
-	} else if x2 >= x1 && x2 >= x3 {
-		fmt.Println(x2)
-	} else {
-		fmt.Println(x3)
-	}
-}
-
-func task2_4() {
-	var age int
-	fmt.Println("Введите возраст")
-	fmt.Scanf("%d", &age)
-	fmt.Println("Возрастная группа: ")
-	switch {
-	case age < 12:
-		fmt.Println("Ребенок")
-	case age >= 12 && age < 18:
-		fmt.Println("Подросток")
-	case age >= 18 && age < 65:
-		fmt.Println("Взрослый")
-	default:
-		fmt.Println("Пожилой")
-	}
-}
-
-func task2_5() {
-	var num int
-	fmt.Println("Введите число")
-	fmt.Scanf("%d", &num)
-	if num%5 == 0 && num%3 == 0 {
-		fmt.Println("Делится")
-	} else {
-		fmt.Println("Не делится")
-	}
-}
-
-func factorial(n int) int {
-	if n == 0 {
-		return 1
-	}
-	return n * factorial(n-1)
-}
-
-func task3_1() {
-	var n int
-	fmt.Println("Введите число:")
-	fmt.Scanf("%d", &n)
-	result := factorial(n)
-	fmt.Printf("Факториал числа %d равен %d\n", n, result)
-}
-
-func fibonacci(n int) []int {
-	fib := make([]int, n)
-	if n >= 1 {
-		fib[0] = 0
-	}
-	if n >= 2 {
-		fib[1] = 1
-	}
-	for i := 2; i < n; i++ {
-		fib[i] = fib[i-1] + fib[i-2]
-	}
-	return fib
-}
-
-func task3_2() {
-	var n int
-	fmt.Println("Введите число:")
-	fmt.Scanf("%d", &n)
-	result := fibonacci(n)
-	fmt.Println("Первые ", n, " чисел Фибонначи: ", result)
-}
-
-func readArray() *[]int {
-	var arr []int
-	var elem, n int
-	fmt.Print("Введите количество чисел в масиве: ")
-	fmt.Scan(&n)
-	fmt.Println("Введите исходный массив:")
-	for i := 0; i < n; i++ {
-		fmt.Scan(&elem)
-		arr = append(arr, elem)
-	}
-	return &arr
-}
-
-func task3_3() {
-	arr := *readArray()
-	for i := 0; i < len(arr)/2; i++ {
-		arr[i], arr[len(arr)-1-i] = arr[len(arr)-1-i], arr[i]
-	}
-
-	fmt.Println("Перевернутый массив:", arr)
-}
-
-func task3_4() {
-	var n int
-	fmt.Print("Введите число для поиска простых чисел: ")
-	fmt.Scan(&n)
-
-	isPrime := func(num int) bool {
-		if num < 2 {
-			return false
-		}
-		for i := 2; i*i <= num; i++ {
-			if num%i == 0 {
-				return false
+func sortArray(arr []float64) []float64 {
+	for i := 0; i < len(arr)-1; i++ {
+		for j := 0; j < len(arr)-i-1; j++ {
+			if arr[j] > arr[j+1] {
+				arr[j], arr[j+1] = arr[j+1], arr[j]
 			}
 		}
-		return true
 	}
+	return arr
+}
 
-	primes := []int{}
-	for i := 2; i <= n; i++ {
+func task2() {
+	var n int
+	fmt.Print("Введите количество элементов в массиве: ")
+	fmt.Scanf("%d", &n)
+	arr := make([]float64, n)
+	fmt.Println("Введите элементы массива:")
+	for i := 0; i < n; i++ {
+		fmt.Scanf("%f", &arr[i])
+	}
+	fmt.Println("Отсортированный массив:", sortArray(arr))
+}
+
+func sumOfSquares(n int) int {
+	sum := 0
+	for i := 2; i <= n; i += 2 {
+		sum += i * i
+	}
+	return sum
+}
+
+func task3() {
+	var n int
+	fmt.Print("Введите число n: ")
+	fmt.Scanf("%d", &n)
+	fmt.Println("Сумма квадратов чётных чисел:", sumOfSquares(n))
+}
+
+func isPalindrome(s string) bool {
+	for i := 0; i < len(s)/2; i++ {
+		if s[i] != s[len(s)-i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+func task4() {
+	var s string
+	fmt.Print("Введите строку: ")
+	fmt.Scanf("%s", &s)
+	if isPalindrome(s) {
+		fmt.Println("Это палиндром.")
+	} else {
+		fmt.Println("Это не палиндром.")
+	}
+}
+
+func isPrime(n int) bool {
+	if n < 2 {
+		return false
+	}
+	for i := 2; i*i <= n; i++ {
+		if n%i == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func task5() {
+	var n int
+	fmt.Print("Введите число: ")
+	fmt.Scanf("%d", &n)
+	if isPrime(n) {
+		fmt.Println("Число простое.")
+	} else {
+		fmt.Println("Число не является простым.")
+	}
+}
+
+func generatePrimes(limit int) []int {
+	var primes []int
+	for i := 2; i <= limit; i++ {
 		if isPrime(i) {
 			primes = append(primes, i)
 		}
 	}
-
-	fmt.Println("Простые числа до", n, ":", primes)
+	return primes
 }
 
-func task3_5() {
-	arr := *readArray()
-	sum := 0
-	for _, num := range arr {
-		sum += num
+func task6() {
+	var limit int
+	fmt.Print("Введите предел для генерации простых чисел: ")
+	fmt.Scanf("%d", &limit)
+	fmt.Println("Простые числа:", generatePrimes(limit))
+}
+
+func toBinary(n int) string {
+	binary := ""
+	for n > 0 {
+		binary = fmt.Sprintf("%d", n%2) + binary
+		n /= 2
 	}
-	fmt.Println("Сумма чисел в массиве:", sum)
+	return binary
+}
+
+func task7() {
+	var n int
+	fmt.Print("Введите число: ")
+	fmt.Scanf("%d", &n)
+	fmt.Println("Двоичное представление числа:", toBinary(n))
+}
+
+func findMax(arr []int) int {
+	maxT := arr[0]
+	for _, value := range arr {
+		if value > maxT {
+			maxT = value
+		}
+	}
+	return maxT
+}
+
+func task8() {
+	var n int
+	fmt.Print("Введите количество элементов в массиве: ")
+	fmt.Scanf("%d", &n)
+	arr := make([]int, n)
+	fmt.Println("Введите элементы массива:")
+	for i := 0; i < n; i++ {
+		fmt.Scanf("%d", &arr[i])
+	}
+	fmt.Println("Максимальный элемент:", findMax(arr))
+}
+
+func gcd(a int, b int) int {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+func task9() {
+	var a, b int
+	fmt.Print("Введите первое число: ")
+	fmt.Scanf("%d", &a)
+	fmt.Print("Введите второе число: ")
+	fmt.Scanf("%d", &b)
+	fmt.Println("НОД:", gcd(a, b))
+}
+
+func sumArray(arr []int) int {
+	sum := 0
+	for _, value := range arr {
+		sum += value
+	}
+	return sum
+}
+
+func task10() {
+	var n int
+	fmt.Print("Введите количество элементов в массиве: ")
+	fmt.Scanf("%d", &n)
+	arr := make([]int, n)
+	fmt.Println("Введите элементы массива:")
+	for i := 0; i < n; i++ {
+		fmt.Scanf("%d", &arr[i])
+	}
+	fmt.Println("Сумма элементов массива:", sumArray(arr))
 }
