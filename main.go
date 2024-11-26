@@ -15,6 +15,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 )
 
 func main() {
@@ -87,5 +88,5 @@ func main() {
 	orderHandler.RegisterRoutes(r)
 	registerHandler.RegisterRoutes(r)
 
-	_ = r.Run(":8080")
+	_ = r.Run(":" + strconv.Itoa(cfg.App.Port))
 }
