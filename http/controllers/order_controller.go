@@ -4,13 +4,15 @@ import (
 	"MireaPR4/database/models"
 	"MireaPR4/database/repositories"
 	"MireaPR4/http/handlers/order/dto"
+	"context"
 	"errors"
 	"strconv"
 )
 
 type OrderController interface {
 	Create(request *dto.CreateOrderDTO) (*models.Order, error)
-	GetAll() ([]models.Order, error)
+	GetAll(cont *context.Context) ([]models.Order, error)
+	GetAllPaginated(offset, limit int, userID *int) ([]models.Order, int64, error)
 	GetByID(id int) (*models.Order, error)
 	Update(id int, data any) (*models.Order, error)
 	Delete(id int) error
@@ -79,8 +81,22 @@ func (c *orderController) Create(request *dto.CreateOrderDTO) (*models.Order, er
 	return &order, nil
 }
 
-func (c *orderController) GetAll() ([]models.Order, error) {
-	return c.repo.GetAll()
+func (c *orderController) GetAll(cont *context.Context) ([]models.Order, error) {
+	return c.repo.GetAll(cont)
+}
+
+func (c *orderController) GetAllPaginated(offset, limit int, userID *int) ([]models.Order, int64, error) {
+	orders, err := c.repo.GetAllPaginated(offset, limit, userID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	count, err := c.repo.Count()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return orders, count, nil
 }
 
 func (c *orderController) GetByID(id int) (*models.Order, error) {

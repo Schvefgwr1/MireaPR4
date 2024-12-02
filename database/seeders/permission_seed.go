@@ -8,9 +8,11 @@ import (
 
 func SeedPermissions(db *gorm.DB) {
 	permissions := []models.Permission{
-		{ID: 1, Name: "View Orders"},
+		{ID: 1, Name: "View and delete Orders"},
 		{ID: 2, Name: "Manage Users"},
 		{ID: 3, Name: "Edit Products"},
+		{ID: 4, Name: "Edit categorical data"},
+		{ID: 5, Name: "See all data"},
 	}
 	for _, permission := range permissions {
 		if err := db.FirstOrCreate(&permission, models.Permission{ID: permission.ID}).Error; err != nil {

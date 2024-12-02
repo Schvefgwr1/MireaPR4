@@ -40,3 +40,15 @@ func ConvertStrToIntParam(param string, ctx *gin.Context) (int, bool) {
 	}
 	return idInt, true
 }
+
+func ParseQueryParam(ctx *gin.Context, key string, defaultValue int) (int, error) {
+	param := ctx.Query(key)
+	if param == "" {
+		return defaultValue, nil
+	}
+	value, err := strconv.Atoi(param)
+	if err != nil {
+		return 0, err
+	}
+	return value, nil
+}

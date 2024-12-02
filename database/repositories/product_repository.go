@@ -2,12 +2,14 @@ package repositories
 
 import (
 	"MireaPR4/database/models"
+	"context"
 	"gorm.io/gorm"
 )
 
 type ProductRepository interface {
 	Create(product *models.Product) error
-	GetAll() ([]models.Product, error)
+	GetAll(c *context.Context) ([]models.Product, error)
+	GetAllWithPagination(page, limit int, categoryID *int) ([]models.Product, error)
 	GetByID(id int) (*models.Product, error)
 	Update(product *models.Product) error
 	Delete(id int) error
@@ -25,9 +27,26 @@ func (r *productRepository) Create(product *models.Product) error {
 	return r.db.Create(product).Error
 }
 
-func (r *productRepository) GetAll() ([]models.Product, error) {
+func (r *productRepository) GetAll(c *context.Context) ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.Preload("Category").Find(&products).Error
+	err := r.db.WithContext(*c).Preload("Category").Find(&products).Error
+	return products, err
+}
+
+func (r *productRepository) GetAllWithPagination(page, limit int, categoryID *int) ([]models.Product, error) {
+	var products []models.Product
+
+	query := r.db
+	if categoryID != nil {
+		query = query.Where("category_id = ?", *categoryID)
+	}
+
+	offset := (page - 1) * limit
+	err := query.Preload("Category").
+		Limit(limit).
+		Offset(offset).
+		Find(&products).Error
+
 	return products, err
 }
 
