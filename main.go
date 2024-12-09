@@ -15,6 +15,7 @@ import (
 	registerHandlers "MireaPR4/http/handlers/register"
 	roleHandlers "MireaPR4/http/handlers/role"
 	shipmentHandlers "MireaPR4/http/handlers/shipment"
+	taskspackage "MireaPR4/http/handlers/tasks"
 	"MireaPR4/http/jwt"
 	"MireaPR4/http/middlewares"
 	"fmt"
@@ -138,6 +139,7 @@ func main() {
 	paymentHandler.RegisterRoutes(r)
 	shipmentHandler.RegisterRoutes(r)
 	productHandler.RegisterRoutes(r)
+	taskspackage.RegisterRoutes(r)
 
 	_ = r.Run(":" + strconv.Itoa(cfg.App.Port))
 }
