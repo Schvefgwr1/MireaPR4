@@ -45,6 +45,14 @@ func (ac *registerController) CreateUser(
 		StatusID: 1,
 	}
 
+	if userOld, e := ac.userRepo.GetByUsername(username); e == nil {
+		if userOld != nil {
+			return nil, errors.New("user already exist")
+		}
+	} else {
+		return nil, errors.New("internal server error")
+	}
+
 	if err := ac.userRepo.Create(&user); err != nil {
 		return nil, err
 	}

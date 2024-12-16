@@ -39,6 +39,7 @@ func (rh *registerHandler) RegisterRoutes(router *gin.Engine) {
 // @Param user body dto2.RegisterDTO true "DTO для регистрации пользователя"
 // @Success 200 {object} map[string]interface{} "Пользователь успешно зарегистрирован"
 // @Failure 400 {object} map[string]interface{} "Неверные данные ввода"
+// @Failure 409 {object} map[string]interface{} "Пользователь уже создан"
 // @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
 // @Router /auth/reg [post]
 func (rh *registerHandler) Register(c *gin.Context) {
@@ -50,6 +51,10 @@ func (rh *registerHandler) Register(c *gin.Context) {
 
 	newUser, err := rh.controller.CreateUser(input.Username, input.Password, input.Email, 1)
 	if err != nil {
+		if err.Error() == "user already exist" {
+			default_functions.RespondWithError(c, http.StatusConflict, err.Error())
+			return
+		}
 		default_functions.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}

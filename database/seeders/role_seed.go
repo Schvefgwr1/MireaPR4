@@ -26,7 +26,7 @@ func SeedRoles(db *gorm.DB) {
 		},
 	}
 	for _, role := range roles {
-		if err := db.Create(&role).Error; err != nil {
+		if err := db.FirstOrCreate(&role).Error; err != nil {
 			log.Printf("Failed to seed role with ID %d: %v", role.ID, err)
 		}
 	}
