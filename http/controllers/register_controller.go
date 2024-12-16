@@ -49,12 +49,10 @@ func (ac *registerController) CreateUser(
 		if userOld != nil {
 			return nil, errors.New("user already exist")
 		}
-	} else {
-		return nil, errors.New("internal server error")
 	}
 
 	if err := ac.userRepo.Create(&user); err != nil {
-		return nil, err
+		return nil, errors.New("internal server error")
 	}
 
 	return &user, nil

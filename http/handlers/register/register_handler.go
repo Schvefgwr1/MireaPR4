@@ -3,7 +3,7 @@ package handlers
 import (
 	"MireaPR4/http/controllers"
 	"MireaPR4/http/default_functions"
-	dto2 "MireaPR4/http/handlers/register/dto"
+	"MireaPR4/http/handlers/register/dto"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -43,7 +43,7 @@ func (rh *registerHandler) RegisterRoutes(router *gin.Engine) {
 // @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
 // @Router /auth/reg [post]
 func (rh *registerHandler) Register(c *gin.Context) {
-	var input dto2.RegisterDTO
+	var input dto.RegisterDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
 		default_functions.RespondWithError(c, http.StatusBadRequest, err.Error())
 		return
@@ -78,7 +78,7 @@ func (rh *registerHandler) Register(c *gin.Context) {
 // @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
 // @Router /auth [post]
 func (rh *registerHandler) Login(c *gin.Context) {
-	var input dto2.LoginDTO
+	var input dto.LoginDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -8,9 +8,9 @@ import (
 
 func SeedShipmentStatuses(db *gorm.DB) {
 	statuses := []models.ShipmentStatus{
-		{ID: 1, Name: "In Progress"},
-		{ID: 2, Name: "Delivered"},
-		{ID: 3, Name: "Returned"},
+		{Name: "In Progress"},
+		{Name: "Delivered"},
+		{Name: "Returned"},
 	}
 	for _, status := range statuses {
 		if err := db.FirstOrCreate(&status, models.ShipmentStatus{ID: status.ID}).Error; err != nil {
