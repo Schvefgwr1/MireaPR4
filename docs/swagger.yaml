@@ -1,0 +1,2077 @@
+basePath: /
+definitions:
+  dto.CreateAddressDTO:
+    properties:
+      city:
+        type: string
+      flat:
+        type: integer
+      house:
+        type: integer
+      index:
+        type: string
+      street:
+        type: string
+    required:
+    - city
+    - flat
+    - house
+    - index
+    - street
+    type: object
+  dto.CreateEmployeeDTO:
+    properties:
+      department:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      position:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - department
+    - email
+    - phone
+    - position
+    - user_id
+    type: object
+  dto.CreateOrderDTO:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/dto.CreateOrderItemDto'
+        type: array
+      status_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  dto.CreateOrderItemDto:
+    properties:
+      price:
+        type: number
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  dto.CreatePaymentDTO:
+    properties:
+      amount:
+        type: number
+      order_id:
+        type: integer
+    required:
+    - amount
+    - order_id
+    type: object
+  dto.CreateProductDTO:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        minimum: 0
+        type: number
+      stock:
+        type: integer
+    required:
+    - category_id
+    - name
+    - price
+    - stock
+    type: object
+  dto.CreateRoleDTO:
+    properties:
+      name:
+        type: string
+      permissions:
+        items:
+          type: integer
+        type: array
+    type: object
+  dto.LoginDTO:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  dto.RegisterDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  dto.UpdateAddressDTO:
+    properties:
+      city:
+        type: string
+      flat:
+        type: integer
+      house:
+        type: integer
+      index:
+        type: string
+      street:
+        type: string
+    type: object
+  dto.UpdateEmployeeDTO:
+    properties:
+      department:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      position:
+        type: string
+    type: object
+  dto.UpdatePaymentDTO:
+    properties:
+      amount:
+        type: number
+      status_id:
+        type: integer
+    type: object
+  dto.UpdateProductDTO:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      stock:
+        type: integer
+    type: object
+  dto.UpdateRoleDTO:
+    properties:
+      name:
+        type: string
+      permissions:
+        items:
+          type: integer
+        type: array
+    required:
+    - permissions
+    type: object
+  models.Address:
+    properties:
+      city:
+        type: string
+      flat:
+        type: integer
+      house:
+        type: integer
+      id:
+        type: integer
+      index:
+        type: string
+      street:
+        type: string
+    required:
+    - city
+    - flat
+    - house
+    - index
+    - street
+    type: object
+  models.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  models.Order:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      order_items:
+        items:
+          $ref: '#/definitions/models.OrderItem'
+        type: array
+      payments:
+        items:
+          $ref: '#/definitions/models.Payment'
+        type: array
+      shipments:
+        items:
+          $ref: '#/definitions/models.Shipment'
+        type: array
+      status:
+        $ref: '#/definitions/models.OrderStatus'
+      status_id:
+        type: integer
+      total_price:
+        type: number
+      user_id:
+        type: integer
+    type: object
+  models.OrderItem:
+    properties:
+      id:
+        type: integer
+      order_id:
+        type: integer
+      price:
+        type: number
+      product:
+        $ref: '#/definitions/models.Product'
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - price
+    - quantity
+    type: object
+  models.OrderStatus:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  models.Payment:
+    properties:
+      amount:
+        type: number
+      id:
+        type: integer
+      order_id:
+        type: integer
+      payment_date:
+        type: string
+      status:
+        $ref: '#/definitions/models.PaymentStatus'
+      status_id:
+        type: integer
+    required:
+    - amount
+    type: object
+  models.PaymentStatus:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  models.Product:
+    properties:
+      category:
+        $ref: '#/definitions/models.Category'
+      category_id:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      stock:
+        type: integer
+    required:
+    - name
+    - price
+    - stock
+    type: object
+  models.Shipment:
+    properties:
+      address:
+        $ref: '#/definitions/models.Address'
+      address_id:
+        type: integer
+      id:
+        type: integer
+      order_id:
+        type: integer
+      shipment_date:
+        type: string
+      status:
+        $ref: '#/definitions/models.ShipmentStatus'
+      status_id:
+        type: integer
+    type: object
+  models.ShipmentStatus:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - name
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Market API
+  version: "1.0"
+paths:
+  /addresses:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех адресов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список адресов
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение всех адресов
+      tags:
+      - /addresses
+    post:
+      consumes:
+      - application/json
+      description: Создает новый адрес на основе предоставленных данных
+      parameters:
+      - description: Данные для создания адреса
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAddressDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешно добавлен новый адрес
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Ошибка валидации входных данных
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание адреса
+      tags:
+      - /addresses
+  /addresses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет адрес на основе его идентификатора
+      parameters:
+      - description: ID адреса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщение об успешном удалении
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный формат ID
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удаление адреса
+      tags:
+      - /addresses
+    get:
+      consumes:
+      - application/json
+      description: Возвращает адрес на основе его идентификатора
+      parameters:
+      - description: ID адреса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация об адресе
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный формат ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Адрес не найден
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение адреса по ID
+      tags:
+      - /addresses
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные существующего адреса
+      parameters:
+      - description: ID адреса
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления адреса
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAddressDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленные данные адреса
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный формат ID или данные для обновления
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновление адреса
+      tags:
+      - /addresses
+  /auth:
+    post:
+      consumes:
+      - application/json
+      description: Выполняет аутентификацию пользователя и возвращает токен
+      parameters:
+      - description: DTO для аутентификации пользователя
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Токен успешно получен
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Аутентификация пользователя
+      tags:
+      - /auth
+  /auth/reg:
+    post:
+      consumes:
+      - application/json
+      description: Создаёт нового пользователя на основе данных из запроса
+      parameters:
+      - description: DTO для регистрации пользователя
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь успешно зарегистрирован
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Пользователь уже создан
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Регистрация нового пользователя
+      tags:
+      - /auth
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех существующих категорий
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список категорий
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение всех категорий
+      tags:
+      - /categories
+  /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет категорию на основе её ID
+      parameters:
+      - description: ID категории
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщение об успешном удалении
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный формат ID
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удаление категории
+      tags:
+      - /categories
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о категории на основе её ID
+      parameters:
+      - description: ID категории
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о категории
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный формат ID
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Категория не найдена
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение категории по ID
+      tags:
+      - /categories
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о категории на основе её ID и имени, переданного
+        в параметрах
+      parameters:
+      - description: ID категории
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новое имя категории
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленная информация о категории
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Ошибка валидации входных данных
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновление категории
+      tags:
+      - /categories
+  /categories/{name}:
+    post:
+      consumes:
+      - application/json
+      description: Создает новую категорию на основе имени, переданного в параметрах
+        URL
+      parameters:
+      - description: Имя категории
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешно добавлена новая категория
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Ошибка валидации входных данных
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание категории
+      tags:
+      - /categories
+  /employees:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех существующих сотрудников
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список сотрудников
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение всех сотрудников
+      tags:
+      - /employees
+    post:
+      consumes:
+      - application/json
+      description: Создает нового сотрудника на основе предоставленных данных
+      parameters:
+      - description: Данные для создания сотрудника
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateEmployeeDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успешно добавлен новый сотрудник
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Ошибка валидации входных данных
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание сотрудника
+      tags:
+      - /employees
+  /employees/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет сотрудника на основе его ID
+      parameters:
+      - description: ID сотрудника
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщение об успешном удалении
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный формат ID
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удаление сотрудника
+      tags:
+      - /employees
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о сотруднике на основе его ID
+      parameters:
+      - description: ID сотрудника
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о сотруднике
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный формат ID
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Сотрудник не найден
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение сотрудника по ID
+      tags:
+      - /employees
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о сотруднике на основе его ID
+      parameters:
+      - description: ID сотрудника
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные сотрудника
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateEmployeeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Обновленная информация о сотруднике
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Ошибка валидации входных данных
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновление сотрудника
+      tags:
+      - /employees
+  /orders:
+    get:
+      consumes:
+      - application/json
+      description: Получение всех заказов с пагинацией
+      parameters:
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Количество на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Заказы успешно получены
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные параметры 'page' или 'limit'
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение всех заказов
+      tags:
+      - /orders
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый заказ, получая данные в формате JSON с деталями заказа
+      parameters:
+      - description: DTO для создания заказа
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateOrderDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Заказ успешно создан
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание нового заказа
+      tags:
+      - /orders
+  /orders/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет заказ по ID
+      parameters:
+      - description: ID заказа
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Заказ успешно удален
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ID заказа
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удаление заказа по ID
+      tags:
+      - /orders
+    get:
+      consumes:
+      - application/json
+      description: Получение заказа по ID
+      parameters:
+      - description: ID заказа
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Заказ успешно получен
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: Неверный ID заказа
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Заказ не найден
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение заказа по ID
+      tags:
+      - /orders
+  /orders/all/:
+    get:
+      consumes:
+      - application/json
+      description: Получение заказов с пагинацией и фильтрацией по пользователю
+      parameters:
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Количество на странице
+        in: query
+        name: limit
+        type: integer
+      - default: -1
+        description: ID пользователя
+        in: query
+        name: userID
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Заказы успешно получены
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные параметры 'page' или 'limit'
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение всех заказов с пагинацией для пользователя
+      tags:
+      - /orders
+  /payments:
+    get:
+      consumes:
+      - application/json
+      description: Получение всех платежей
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Платежи успешно получены
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение всех платежей
+      tags:
+      - /payments
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый платеж, получая данные в формате JSON с деталями
+        платежа
+      parameters:
+      - description: DTO для создания платежа
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreatePaymentDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Платеж успешно создан
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание нового платежа
+      tags:
+      - /payments
+  /payments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет платеж по ID
+      parameters:
+      - description: ID платежа
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Платеж успешно удален
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ID платежа
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удаление платежа по ID
+      tags:
+      - /payments
+    get:
+      consumes:
+      - application/json
+      description: Получение платежа по ID
+      parameters:
+      - description: ID платежа
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Платеж успешно получен
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ID платежа
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Платеж не найден
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение платежа по ID
+      tags:
+      - /payments
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о платеже (сумма, статус)
+      parameters:
+      - description: ID платежа
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: DTO для обновления платежа
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdatePaymentDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Платеж успешно обновлен
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Платеж не найден
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновление платежа
+      tags:
+      - /payments
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Получение продуктов с пагинацией
+      parameters:
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Количество элементов на странице
+        in: query
+        name: limit
+        type: integer
+      - default: -1
+        description: ID категории для фильтрации продуктов
+        in: query
+        name: categoryID
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Продукты успешно получены
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные запроса
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение продуктов с пагинацией
+      tags:
+      - /products
+    post:
+      consumes:
+      - application/json
+      description: Создает новый продукт, получая данные в формате JSON с деталями
+        продукта
+      parameters:
+      - description: DTO для создания продукта
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateProductDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Продукт успешно создан
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание нового продукта
+      tags:
+      - /products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет продукт по ID
+      parameters:
+      - description: ID продукта
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Продукт успешно удален
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ID продукта
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удаление продукта по ID
+      tags:
+      - /products
+    get:
+      consumes:
+      - application/json
+      description: Получение продукта по ID
+      parameters:
+      - description: ID продукта
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Продукт успешно получен
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ID продукта
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Продукт не найден
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение продукта по ID
+      tags:
+      - /products
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о продукте
+      parameters:
+      - description: ID продукта
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: DTO для обновления продукта
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProductDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Продукт успешно обновлен
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Продукт не найден
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновление продукта
+      tags:
+      - /products
+  /products/all/:
+    get:
+      consumes:
+      - application/json
+      description: Получение всех продуктов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Продукты успешно получены
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+        "504":
+          description: Ошибка в связи с таймаутом
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение всех продуктов
+      tags:
+      - /products
+  /roles:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех ролей
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Роли успешно получены
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение всех ролей
+      tags:
+      - /roles
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новую роль с указанными правами
+      parameters:
+      - description: DTO для создания роли
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRoleDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Роль успешно создана
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание новой роли
+      tags:
+      - /roles
+  /roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет роль по ID
+      parameters:
+      - description: ID роли
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Роль успешно удалена
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ID роли
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Удаление роли по ID
+      tags:
+      - /roles
+    get:
+      consumes:
+      - application/json
+      description: Возвращает роль по ID
+      parameters:
+      - description: ID роли
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Роль успешно получена
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный ID роли
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Роль не найдена
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение роли по ID
+      tags:
+      - /roles
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о роли (например, права доступа)
+      parameters:
+      - description: ID роли
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: DTO для обновления роли
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoleDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Роль успешно обновлена
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверные данные ввода
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Обновление роли
+      tags:
+      - /roles
+  /roles/name/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает роль по имени
+      parameters:
+      - description: Имя роли
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Роль успешно получена
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Роль не найдена
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение роли по имени
+      tags:
+      - /roles
+  /tasks/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает задачу с указанным ID
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Задача успешно найдена
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Задача не найдена
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение информации о задаче по ID
+      tags:
+      - /tasks
+    post:
+      consumes:
+      - application/json
+      description: Создаёт задачу на основе переданного ID и запускает её
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Задача успешно создана
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Неверный запрос
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Ошибка аутентификации
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Ошибка прав доступа
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Создание новой задачи
+      tags:
+      - /tasks
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

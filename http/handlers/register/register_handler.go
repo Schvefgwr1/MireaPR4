@@ -36,7 +36,7 @@ func (rh *registerHandler) RegisterRoutes(router *gin.Engine) {
 // @Tags /auth
 // @Accept json
 // @Produce json
-// @Param user body dto2.RegisterDTO true "DTO для регистрации пользователя"
+// @Param user body dto.RegisterDTO true "DTO для регистрации пользователя"
 // @Success 200 {object} map[string]interface{} "Пользователь успешно зарегистрирован"
 // @Failure 400 {object} map[string]interface{} "Неверные данные ввода"
 // @Failure 409 {object} map[string]interface{} "Пользователь уже создан"
@@ -72,7 +72,7 @@ func (rh *registerHandler) Register(c *gin.Context) {
 // @Tags /auth
 // @Accept json
 // @Produce json
-// @Param login body dto2.LoginDTO true "DTO для аутентификации пользователя"
+// @Param login body dto.LoginDTO true "DTO для аутентификации пользователя"
 // @Success 200 {object} map[string]interface{} "Токен успешно получен"
 // @Failure 400 {object} map[string]interface{} "Неверные данные ввода"
 // @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
