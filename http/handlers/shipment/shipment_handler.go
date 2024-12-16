@@ -4,6 +4,7 @@ import (
 	"MireaPR4/http/controllers"
 	"MireaPR4/http/default_functions"
 	"MireaPR4/http/handlers/shipment/dto"
+	"MireaPR4/http/middlewares"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -26,7 +27,7 @@ func NewShipmentHandler(controller controllers.ShipmentController) ShipmentHandl
 }
 
 func (h *shipmentHandler) RegisterRoutes(router *gin.Engine) {
-	shipments := router.Group("/shipments")
+	shipments := router.Group("/shipments").Use(middlewares.AuthMiddleware())
 	{
 		shipments.POST("/", h.Create)
 		shipments.GET("/", h.GetAll)

@@ -8,9 +8,10 @@ import (
 
 type ProductRepository interface {
 	Create(product *models.Product) error
-	GetAll(c *context.Context) ([]models.Product, error)
+	GetAll(c context.Context) ([]models.Product, error)
 	GetAllWithPagination(page, limit int, categoryID *int) ([]models.Product, error)
 	GetByID(id int) (*models.Product, error)
+	Count() (int64, error)
 	Update(product *models.Product) error
 	Delete(id int) error
 }
@@ -27,9 +28,9 @@ func (r *productRepository) Create(product *models.Product) error {
 	return r.db.Create(product).Error
 }
 
-func (r *productRepository) GetAll(c *context.Context) ([]models.Product, error) {
+func (r *productRepository) GetAll(c context.Context) ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.WithContext(*c).Preload("Category").Find(&products).Error
+	err := r.db.WithContext(c).Preload("Category").Find(&products).Error
 	return products, err
 }
 
@@ -48,6 +49,12 @@ func (r *productRepository) GetAllWithPagination(page, limit int, categoryID *in
 		Find(&products).Error
 
 	return products, err
+}
+
+func (r *productRepository) Count() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Product{}).Count(&count).Error
+	return count, err
 }
 
 func (r *productRepository) GetByID(id int) (*models.Product, error) {

@@ -5,6 +5,7 @@ import (
 	"MireaPR4/database/models"
 	"MireaPR4/database/repositories"
 	"MireaPR4/database/seeders"
+	_ "MireaPR4/docs"
 	"MireaPR4/http/controllers"
 	addressHandlers "MireaPR4/http/handlers/address"
 	categoryHandlers "MireaPR4/http/handlers/category"
@@ -20,12 +21,31 @@ import (
 	"MireaPR4/http/middlewares"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
 	"strconv"
 )
 
+// @title           Market API
+// @version         1.0
+// @description     This is a sample server.
+// @termsOfService  http://swagger.io/terms/
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+// @host      localhost:8080
+// @BasePath  /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @tokenUrl /auth
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	//Подключаем конфиг
 	cfg, err := config.LoadConfig("configs/config.yaml")
@@ -43,6 +63,8 @@ func main() {
 		cfg.Database.Host, cfg.Database.User, cfg.Database.Password, cfg.Database.Name, cfg.Database.Port,
 	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	//db = db.Debug()
+
 	if err != nil {
 		panic("failed to connect to database")
 	}
@@ -83,6 +105,8 @@ func main() {
 	paymentRepo := repositories.NewPaymentRepository(db)
 	shipmentRepo := repositories.NewShipmentRepository(db)
 	shipmentStatusRepo := repositories.NewShipmentStatusRepository(db)
+	orderItemRepo := repositories.NewOrderItemRepository(db)
+	paymentStatusRepo := repositories.NewPaymentStatusRepository(db)
 
 	//Инициализация middlewares
 	middlewares.InitDB(&userRepo)
@@ -93,6 +117,7 @@ func main() {
 		userRepo,
 		orderStatusRepo,
 		productRepo,
+		orderItemRepo,
 	)
 	orderHandler := orderHandlers.NewOrderHandler(orderController)
 
@@ -117,7 +142,7 @@ func main() {
 	employeeHandler := employeeHandlers.NewEmployeeHandler(employeeController)
 
 	//Инициализация payment контроллеров
-	paymentController := controllers.NewPaymentController(paymentRepo)
+	paymentController := controllers.NewPaymentController(paymentRepo, paymentStatusRepo)
 	paymentHandler := paymentHandlers.NewPaymentHandler(paymentController)
 
 	//Инициализация shipment контроллеров
@@ -130,6 +155,21 @@ func main() {
 
 	// Регистрируем роуты и запускаем сервер
 	r := gin.Default()
+
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	})
+
+	// Настройка маршрута для Swagger
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	orderHandler.RegisterRoutes(r)
 	registerHandler.RegisterRoutes(r)
 	roleHandler.RegisterRoutes(r)

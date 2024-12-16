@@ -30,6 +30,11 @@ func (c *employeeController) Create(employeeDTO *dto.CreateEmployeeDTO) (*models
 		return nil, errors.New("user not found")
 	}
 
+	oldEmployee, e := c.repo.FindEmployeeByUserID(employeeDTO.UserID)
+	if e == nil && oldEmployee != nil {
+		return nil, errors.New("employee with userID already exists")
+	}
+
 	// Создаем сотрудника
 	employee := &models.Employee{
 		UserID:     employeeDTO.UserID,
@@ -46,7 +51,11 @@ func (c *employeeController) GetAll() ([]models.Employee, error) {
 }
 
 func (c *employeeController) GetByID(id int) (*models.Employee, error) {
-	return c.repo.GetByID(id)
+	if emp, err := c.repo.GetByID(id); err != nil || emp == nil {
+		return nil, errors.New("employee not found")
+	} else {
+		return emp, nil
+	}
 }
 
 func (c *employeeController) Update(id int, employeeDTO *dto.UpdateEmployeeDTO) (*models.Employee, error) {

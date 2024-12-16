@@ -24,8 +24,8 @@ func NewCategoryController(repo repositories.CategoryRepository) CategoryControl
 
 func (c *categoryController) Create(name string) (*models.Category, error) {
 	// Проверка на дублирование категории
-	existingCategory, _ := c.repo.GetByName(name)
-	if existingCategory != nil {
+	existingCategory, err := c.repo.GetByName(name)
+	if err == nil || existingCategory != nil {
 		return nil, errors.New("category with this name already exists")
 	}
 
@@ -35,9 +35,9 @@ func (c *categoryController) Create(name string) (*models.Category, error) {
 	}
 
 	// Сохраняем категорию в репозитории
-	err := c.repo.Create(&category)
-	if err != nil {
-		return nil, err
+	e := c.repo.Create(&category)
+	if e != nil {
+		return nil, e
 	}
 
 	return &category, nil

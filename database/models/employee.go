@@ -7,5 +7,5 @@ type Employee struct {
 	Department string `json:"department" binding:"required"`
 	Phone      string `json:"phone" binding:"required"`
 	Email      string `json:"email" binding:"required"`
-	User       User   `gorm:"foreignKey:UserID" json:"user"`
+	User       User   `gorm:"foreignKey:UserID" json:"-"`
 }

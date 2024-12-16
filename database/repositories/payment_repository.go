@@ -45,7 +45,7 @@ func (r *paymentRepository) GetByID(id int) (*models.Payment, error) {
 }
 
 func (r *paymentRepository) Update(payment *models.Payment) (*models.Payment, error) {
-	if err := r.db.Save(payment).Error; err != nil {
+	if err := r.db.Updates(payment).Error; err != nil {
 		return nil, err
 	}
 	return payment, nil

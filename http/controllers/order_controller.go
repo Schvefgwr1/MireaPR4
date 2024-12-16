@@ -11,7 +11,7 @@ import (
 
 type OrderController interface {
 	Create(request *dto.CreateOrderDTO) (*models.Order, error)
-	GetAll(cont *context.Context) ([]models.Order, error)
+	GetAll(cont context.Context) ([]models.Order, error)
 	GetAllPaginated(offset, limit int, userID *int) ([]models.Order, int64, error)
 	GetByID(id int) (*models.Order, error)
 	Update(id int, data any) (*models.Order, error)
@@ -23,6 +23,7 @@ type orderController struct {
 	userRepo        repositories.UserRepository
 	orderStatusRepo repositories.OrderStatusRepository
 	productRepo     repositories.ProductRepository
+	orderItemRepo   repositories.OrderItemRepository
 }
 
 func NewOrderController(
@@ -30,8 +31,15 @@ func NewOrderController(
 	userRepo repositories.UserRepository,
 	orderStatusRepo repositories.OrderStatusRepository,
 	productRepo repositories.ProductRepository,
+	orderItemRepo repositories.OrderItemRepository,
 ) OrderController {
-	return &orderController{repo, userRepo, orderStatusRepo, productRepo}
+	return &orderController{
+		repo,
+		userRepo,
+		orderStatusRepo,
+		productRepo,
+		orderItemRepo,
+	}
 }
 
 func (c *orderController) Create(request *dto.CreateOrderDTO) (*models.Order, error) {
@@ -81,7 +89,7 @@ func (c *orderController) Create(request *dto.CreateOrderDTO) (*models.Order, er
 	return &order, nil
 }
 
-func (c *orderController) GetAll(cont *context.Context) ([]models.Order, error) {
+func (c *orderController) GetAll(cont context.Context) ([]models.Order, error) {
 	return c.repo.GetAll(cont)
 }
 
@@ -113,5 +121,16 @@ func (c *orderController) Update(id int, data any) (*models.Order, error) {
 }
 
 func (c *orderController) Delete(id int) error {
+	order, err := c.repo.GetByID(id)
+	if err != nil {
+		return errors.New("error of orders repo")
+	}
+
+	for _, item := range order.OrderItems {
+		if err := c.orderItemRepo.Delete(item.ID); err != nil {
+			return errors.New("error of items repo")
+		}
+	}
+
 	return c.repo.Delete(id)
 }

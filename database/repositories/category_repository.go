@@ -41,9 +41,14 @@ func (r *categoryRepository) GetByID(id int) (*models.Category, error) {
 func (r *categoryRepository) GetByName(name string) (*models.Category, error) {
 	var category models.Category
 	err := r.db.
-		Where("username = ?", name).
+		Where("name = ?", name).
 		First(&category).Error
-	return &category, err
+
+	if err != nil {
+		return nil, err // Возвращаем ошибку, включая ErrRecordNotFound
+	}
+
+	return &category, nil
 }
 
 func (r *categoryRepository) Update(category *models.Category) error {

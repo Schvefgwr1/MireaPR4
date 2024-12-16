@@ -16,17 +16,22 @@ type PaymentController interface {
 }
 
 type paymentController struct {
-	repo repositories.PaymentRepository
+	repo       repositories.PaymentRepository
+	statusRepo repositories.PaymentStatusRepository
 }
 
-func NewPaymentController(repo repositories.PaymentRepository) PaymentController {
-	return &paymentController{repo}
+func NewPaymentController(
+	repo repositories.PaymentRepository,
+	statusRepo repositories.PaymentStatusRepository,
+) PaymentController {
+	return &paymentController{repo, statusRepo}
 }
 
 func (c *paymentController) Create(data *dto.CreatePaymentDTO) (*models.Payment, error) {
 	payment := &models.Payment{
-		OrderID: data.OrderID,
-		Amount:  data.Amount,
+		OrderID:  data.OrderID,
+		Amount:   data.Amount,
+		StatusID: 1,
 	}
 
 	createdPayment, err := c.repo.Create(payment)
@@ -53,7 +58,12 @@ func (c *paymentController) Update(id int, data *dto.UpdatePaymentDTO) (*models.
 
 	// Обновление статуса, если передан
 	if data.StatusID != nil {
+		status, e := c.statusRepo.GetByID(*data.StatusID)
+		if e != nil || status == nil {
+			return nil, errors.New("payment status not found")
+		}
 		payment.StatusID = *data.StatusID
+		payment.Status = *status
 	}
 
 	// Обновление суммы, если передана

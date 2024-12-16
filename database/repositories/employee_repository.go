@@ -13,6 +13,7 @@ type EmployeeRepository interface {
 	Update(id int, employee *models.Employee) (*models.Employee, error)
 	Delete(id int) error
 	FindUserByID(userID int) (*models.User, error)
+	FindEmployeeByUserID(id int) (*models.Employee, error)
 }
 
 type employeeRepository struct {
@@ -41,7 +42,7 @@ func (r *employeeRepository) GetByID(id int) (*models.Employee, error) {
 	var employee models.Employee
 	result := r.db.Preload("User").First(&employee, id)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return nil, nil
+		return nil, result.Error
 	}
 	return &employee, result.Error
 }
@@ -71,4 +72,13 @@ func (r *employeeRepository) FindUserByID(userID int) (*models.User, error) {
 		return nil, nil
 	}
 	return &user, result.Error
+}
+
+func (r *employeeRepository) FindEmployeeByUserID(id int) (*models.Employee, error) {
+	var employee models.Employee
+	result := r.db.Where("user_id = ?", id).First(&employee).Error
+	if result != nil {
+		return nil, result
+	}
+	return &employee, nil
 }

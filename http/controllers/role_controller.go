@@ -90,7 +90,7 @@ func (rc *roleController) Update(id int, request *dto.UpdateRoleDTO) (*models.Ro
 		role.Name = *request.Name
 	}
 
-	if err := rc.repository.Create(role); err == nil {
+	if err := rc.repository.Update(role); err == nil {
 		return role, nil
 	} else {
 		return nil, err

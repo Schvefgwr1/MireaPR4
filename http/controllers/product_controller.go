@@ -10,8 +10,8 @@ import (
 
 type ProductController interface {
 	Create(request *dto.CreateProductDTO) (*models.Product, error)
-	GetAll(c *context.Context) ([]models.Product, error)
-	GetAllWithPagination(page, limit int, categoryID *int) ([]models.Product, error)
+	GetAll(c context.Context) ([]models.Product, error)
+	GetAllWithPagination(page, limit int, categoryID *int) ([]models.Product, int64, error)
 	GetByID(id int) (*models.Product, error)
 	Update(id int, data *dto.UpdateProductDTO) (*models.Product, error)
 	Delete(id int) error
@@ -47,12 +47,21 @@ func (c *productController) Create(request *dto.CreateProductDTO) (*models.Produ
 	return &product, nil
 }
 
-func (c *productController) GetAll(cont *context.Context) ([]models.Product, error) {
+func (c *productController) GetAll(cont context.Context) ([]models.Product, error) {
 	return c.repo.GetAll(cont)
 }
 
-func (c *productController) GetAllWithPagination(page, limit int, categoryID *int) ([]models.Product, error) {
-	return c.repo.GetAllWithPagination(page, limit, categoryID)
+func (c *productController) GetAllWithPagination(page, limit int, categoryID *int) ([]models.Product, int64, error) {
+	products, err := c.repo.GetAllWithPagination(page, limit, categoryID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	count, err := c.repo.Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	return products, count, nil
 }
 
 func (c *productController) GetByID(id int) (*models.Product, error) {
@@ -75,10 +84,17 @@ func (c *productController) Update(id int, data *dto.UpdateProductDTO) (*models.
 		product.Price = *data.Price
 	}
 	if data.Stock != nil {
-		product.Price = *data.Price
+		product.Stock = *data.Stock
 	}
+
 	if data.CategoryID != nil {
-		product.CategoryID = *data.CategoryID
+		category, err := c.categoryRepo.GetByID(*data.CategoryID)
+		if err == nil && category != nil {
+			product.CategoryID = category.ID
+			product.Category = *category
+		} else {
+			return nil, errors.New("incorrect category id")
+		}
 	}
 
 	if err := c.repo.Update(product); err != nil {

@@ -8,7 +8,7 @@ import (
 
 type OrderRepository interface {
 	Create(order *models.Order) error
-	GetAll(c *context.Context) ([]models.Order, error)
+	GetAll(c context.Context) ([]models.Order, error)
 	GetAllPaginated(offset, limit int, userID *int) ([]models.Order, error)
 	Count() (int64, error)
 	GetByID(id int) (*models.Order, error)
@@ -25,13 +25,29 @@ func NewOrderRepository(db *gorm.DB) OrderRepository {
 }
 
 func (r *orderRepository) Create(order *models.Order) error {
-	return r.db.Create(order).Error
+	// Начало транзакции
+	tx := r.db.Begin()
+
+	// Создание заказа
+	if err := tx.Create(order).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Подгрузка связанных данных
+	if err := tx.Preload("Payments").Preload("OrderItems.Product").First(order, order.ID).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Подтверждение транзакции
+	return tx.Commit().Error
 }
 
-func (r *orderRepository) GetAll(c *context.Context) ([]models.Order, error) {
+func (r *orderRepository) GetAll(c context.Context) ([]models.Order, error) {
 	var orders []models.Order
 	err := r.db.
-		WithContext(*c).
+		WithContext(c).
 		Preload("OrderItems").
 		Preload("Shipments").
 		Preload("Payments").

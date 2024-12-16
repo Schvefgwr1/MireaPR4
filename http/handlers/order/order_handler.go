@@ -6,7 +6,6 @@ import (
 	"MireaPR4/http/default_functions"
 	"MireaPR4/http/handlers/order/dto"
 	"MireaPR4/http/middlewares"
-	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -18,7 +17,6 @@ type OrderHandler interface {
 	GetAll(ctx *gin.Context)
 	GetAllPaginated(ctx *gin.Context)
 	GetByID(ctx *gin.Context)
-	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 	RegisterRoutes(router *gin.Engine)
 }
@@ -56,10 +54,13 @@ func (h *orderHandler) RegisterRoutes(router *gin.Engine) {
 			middlewares.PermissionsMiddleware("View and delete Orders"),
 			h.GetAllPaginated,
 		)
-		orders.GET("/all/", h.GetAll).
-			Use(middlewares.PermissionsMiddleware("See all data"))
+		orders.GET(
+			"/all/",
+			middlewares.TimeoutMiddleware(2*time.Second),
+			middlewares.PermissionsMiddleware("See all data"),
+			h.GetAll,
+		)
 		orders.GET("/:id", h.GetByID)
-		orders.PUT("/:id", h.Update)
 		orders.DELETE(
 			"/:id",
 			middlewares.PermissionsMiddleware("View and delete Orders"),
@@ -68,7 +69,19 @@ func (h *orderHandler) RegisterRoutes(router *gin.Engine) {
 	}
 }
 
-// Create Хендлеры
+// Create Создание заказа
+// @Summary Создание нового заказа
+// @Description Создаёт новый заказ, получая данные в формате JSON с деталями заказа
+// @Tags /orders
+// @Accept json
+// @Produce json
+// @Param order body dto.CreateOrderDTO true "DTO для создания заказа"
+// @Success 201 {object} map[string]interface{} "Заказ успешно создан"
+// @Failure 400 {object} map[string]interface{} "Неверные данные ввода"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /orders [post]
 func (h *orderHandler) Create(ctx *gin.Context) {
 	if !default_functions.ValidateJSON(ctx) {
 		return
@@ -94,11 +107,23 @@ func (h *orderHandler) Create(ctx *gin.Context) {
 	default_functions.RespondWithSuccess(ctx, http.StatusCreated, response)
 }
 
+// GetAll Получение всех заказов
+// @Summary Получение всех заказов
+// @Description Получение всех заказов с пагинацией
+// @Tags /orders
+// @Accept json
+// @Produce json
+// @Param page query int false "Номер страницы" default(1)
+// @Param limit query int false "Количество на странице" default(10)
+// @Success 200 {object} map[string]interface{} "Заказы успешно получены"
+// @Failure 400 {object} map[string]interface{} "Неверные параметры 'page' или 'limit'"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 403 {object} map[string]interface{} "Ошибка прав доступа"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /orders [get]
 func (h *orderHandler) GetAll(ctx *gin.Context) {
-	ctxT, cancel := context.WithTimeout(ctx.Request.Context(), 2*time.Second)
-	defer cancel()
-
-	response, err := h.controller.GetAll(&ctxT)
+	response, err := h.controller.GetAll(ctx.Request.Context())
 	if err != nil {
 		default_functions.RespondWithError(ctx, http.StatusInternalServerError, err.Error())
 		return
@@ -106,6 +131,22 @@ func (h *orderHandler) GetAll(ctx *gin.Context) {
 	default_functions.RespondWithSuccess(ctx, http.StatusOK, response)
 }
 
+// GetAllPaginated Получение всех заказов с пагинацией
+// @Summary Получение всех заказов с пагинацией для пользователя
+// @Description Получение заказов с пагинацией и фильтрацией по пользователю
+// @Tags /orders
+// @Accept json
+// @Produce json
+// @Param page query int false "Номер страницы" default(1)
+// @Param limit query int false "Количество на странице" default(10)
+// @Param userID query int false "ID пользователя" default(-1)
+// @Success 200 {object} map[string]interface{} "Заказы успешно получены"
+// @Failure 400 {object} map[string]interface{} "Неверные параметры 'page' или 'limit'"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 403 {object} map[string]interface{} "Ошибка прав доступа"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /orders/all/ [get]
 func (h *orderHandler) GetAllPaginated(ctx *gin.Context) {
 	page, err := default_functions.ParseQueryParam(ctx, "page", 1)
 	if err != nil {
@@ -142,6 +183,20 @@ func (h *orderHandler) GetAllPaginated(ctx *gin.Context) {
 	})
 }
 
+// GetByID Получение заказа по ID
+// @Summary Получение заказа по ID
+// @Description Получение заказа по ID
+// @Tags /orders
+// @Accept json
+// @Produce json
+// @Param id path int true "ID заказа"
+// @Success 200 {object} models.Order "Заказ успешно получен"
+// @Failure 400 {object} map[string]interface{} "Неверный ID заказа"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 404 {object} map[string]interface{} "Заказ не найден"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /orders/{id} [get]
 func (h *orderHandler) GetByID(ctx *gin.Context) {
 	strParam := ctx.Param("id")
 
@@ -158,29 +213,20 @@ func (h *orderHandler) GetByID(ctx *gin.Context) {
 	default_functions.RespondWithSuccess(ctx, http.StatusOK, response)
 }
 
-func (h *orderHandler) Update(ctx *gin.Context) {
-	if !default_functions.ValidateJSON(ctx) {
-		return
-	}
-
-	strParam := ctx.Param("id")
-	id, valid := default_functions.ConvertStrToIntParam(strParam, ctx)
-	if !valid {
-		return
-	}
-	var requestData any
-	if err := ctx.ShouldBindJSON(&requestData); err != nil {
-		default_functions.RespondWithError(ctx, http.StatusBadRequest, err.Error())
-		return
-	}
-	response, err := h.controller.Update(id, requestData)
-	if err != nil {
-		default_functions.RespondWithError(ctx, http.StatusInternalServerError, err.Error())
-		return
-	}
-	default_functions.RespondWithSuccess(ctx, http.StatusOK, response)
-}
-
+// Delete Удаление заказа по ID
+// @Summary Удаление заказа по ID
+// @Description Удаляет заказ по ID
+// @Tags /orders
+// @Accept json
+// @Produce json
+// @Param id path int true "ID заказа"
+// @Success 200 {object} map[string]interface{} "Заказ успешно удален"
+// @Failure 400 {object} map[string]interface{} "Неверный ID заказа"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 403 {object} map[string]interface{} "Ошибка прав доступа"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /orders/{id} [delete]
 func (h *orderHandler) Delete(ctx *gin.Context) {
 	strParam := ctx.Param("id")
 	id, valid := default_functions.ConvertStrToIntParam(strParam, ctx)

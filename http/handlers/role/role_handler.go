@@ -55,19 +55,20 @@ func validateCreateRoleDTO(data any) (*dto.CreateRoleDTO, error) {
 	return roleDTO, nil
 }
 
-func validateUpdateRoleDTO(data any) (*dto.UpdateRoleDTO, error) {
-	roleDTO, ok := data.(*dto.UpdateRoleDTO)
-	if !ok {
-		return nil, errors.New("invalid type: expected UpdateRoleDTO")
-	}
-
-	if roleDTO.Permissions == nil || len(roleDTO.Permissions) == 0 {
-		return nil, errors.New("field 'permissions_ids' is required")
-	}
-
-	return roleDTO, nil
-}
-
+// Create Создание новой роли
+// @Summary Создание новой роли
+// @Description Создаёт новую роль с указанными правами
+// @Tags /roles
+// @Accept json
+// @Produce json
+// @Param role body dto.CreateRoleDTO true "DTO для создания роли"
+// @Success 201 {object} map[string]interface{} "Роль успешно создана"
+// @Failure 400 {object} map[string]interface{} "Неверные данные ввода"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 403 {object} map[string]interface{} "Ошибка прав доступа"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /roles [post]
 func (h *roleHandler) Create(ctx *gin.Context) {
 	if !default_functions.ValidateJSON(ctx) {
 		return
@@ -87,12 +88,24 @@ func (h *roleHandler) Create(ctx *gin.Context) {
 
 	response, err := h.controller.Create(validDTO)
 	if err != nil {
-		default_functions.RespondWithError(ctx, http.StatusInternalServerError, err.Error())
+		default_functions.RespondWithError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 	default_functions.RespondWithSuccess(ctx, http.StatusCreated, response)
 }
 
+// GetAll Получение всех ролей
+// @Summary Получение всех ролей
+// @Description Возвращает список всех ролей
+// @Tags /roles
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{} "Роли успешно получены"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 403 {object} map[string]interface{} "Ошибка прав доступа"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /roles [get]
 func (h *roleHandler) GetAll(ctx *gin.Context) {
 	response, err := h.controller.GetAll()
 	if err != nil {
@@ -102,6 +115,21 @@ func (h *roleHandler) GetAll(ctx *gin.Context) {
 	default_functions.RespondWithSuccess(ctx, http.StatusOK, response)
 }
 
+// GetByID Получение роли по ID
+// @Summary Получение роли по ID
+// @Description Возвращает роль по ID
+// @Tags /roles
+// @Accept json
+// @Produce json
+// @Param id path int true "ID роли"
+// @Success 200 {object} map[string]interface{} "Роль успешно получена"
+// @Failure 400 {object} map[string]interface{} "Неверный ID роли"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 403 {object} map[string]interface{} "Ошибка прав доступа"
+// @Failure 404 {object} map[string]interface{} "Роль не найдена"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /roles/{id} [get]
 func (h *roleHandler) GetByID(ctx *gin.Context) {
 	strParam := ctx.Param("id")
 
@@ -118,6 +146,19 @@ func (h *roleHandler) GetByID(ctx *gin.Context) {
 	default_functions.RespondWithSuccess(ctx, http.StatusOK, response)
 }
 
+// GetByName Получение роли по имени
+// @Summary Получение роли по имени
+// @Description Возвращает роль по имени
+// @Tags /roles
+// @Accept json
+// @Produce json
+// @Param name path string true "Имя роли"
+// @Success 200 {object} map[string]interface{} "Роль успешно получена"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 404 {object} map[string]interface{} "Роль не найдена"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /roles/name/{name} [get]
 func (h *roleHandler) GetByName(ctx *gin.Context) {
 	strParam := ctx.Param("name")
 
@@ -129,6 +170,34 @@ func (h *roleHandler) GetByName(ctx *gin.Context) {
 	default_functions.RespondWithSuccess(ctx, http.StatusOK, response)
 }
 
+func validateUpdateRoleDTO(data any) (*dto.UpdateRoleDTO, error) {
+	roleDTO, ok := data.(*dto.UpdateRoleDTO)
+	if !ok {
+		return nil, errors.New("invalid type: expected UpdateRoleDTO")
+	}
+
+	if roleDTO.Permissions == nil || len(roleDTO.Permissions) == 0 {
+		return nil, errors.New("field 'permissions_ids' is required")
+	}
+
+	return roleDTO, nil
+}
+
+// Update Обновление роли
+// @Summary Обновление роли
+// @Description Обновляет информацию о роли (например, права доступа)
+// @Tags /roles
+// @Accept json
+// @Produce json
+// @Param id path int true "ID роли"
+// @Param role body dto.UpdateRoleDTO true "DTO для обновления роли"
+// @Success 200 {object} map[string]interface{} "Роль успешно обновлена"
+// @Failure 400 {object} map[string]interface{} "Неверные данные ввода"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 403 {object} map[string]interface{} "Ошибка прав доступа"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /roles/{id} [put]
 func (h *roleHandler) Update(ctx *gin.Context) {
 	if !default_functions.ValidateJSON(ctx) {
 		return
@@ -140,7 +209,7 @@ func (h *roleHandler) Update(ctx *gin.Context) {
 		default_functions.RespondWithError(ctx, http.StatusBadRequest, "error of param in route")
 		return
 	}
-	var requestData any
+	var requestData dto.UpdateRoleDTO
 	if err := ctx.ShouldBindJSON(&requestData); err != nil {
 		default_functions.RespondWithError(ctx, http.StatusBadRequest, err.Error())
 		return
@@ -160,6 +229,20 @@ func (h *roleHandler) Update(ctx *gin.Context) {
 	default_functions.RespondWithSuccess(ctx, http.StatusOK, response)
 }
 
+// Delete Удаление роли по ID
+// @Summary Удаление роли по ID
+// @Description Удаляет роль по ID
+// @Tags /roles
+// @Accept json
+// @Produce json
+// @Param id path int true "ID роли"
+// @Success 200 {object} map[string]interface{} "Роль успешно удалена"
+// @Failure 400 {object} map[string]interface{} "Неверный ID роли"
+// @Failure 401 {object} map[string]interface{} "Ошибка аутентификации"
+// @Failure 403 {object} map[string]interface{} "Ошибка прав доступа"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Security BearerAuth
+// @Router /roles/{id} [delete]
 func (h *roleHandler) Delete(ctx *gin.Context) {
 	strParam := ctx.Param("id")
 	id, valid := default_functions.ConvertStrToIntParam(strParam, ctx)
@@ -173,6 +256,6 @@ func (h *roleHandler) Delete(ctx *gin.Context) {
 		return
 	}
 	default_functions.RespondWithSuccess(ctx, http.StatusOK, gin.H{
-		"message": "Order deleted successfully",
+		"message": "Role deleted successfully",
 	})
 }

@@ -30,6 +30,17 @@ func (rh *registerHandler) RegisterRoutes(router *gin.Engine) {
 	}
 }
 
+// Register Регистрация нового пользователя
+// @Summary Регистрация нового пользователя
+// @Description Создаёт нового пользователя на основе данных из запроса
+// @Tags /auth
+// @Accept json
+// @Produce json
+// @Param user body dto2.RegisterDTO true "DTO для регистрации пользователя"
+// @Success 200 {object} map[string]interface{} "Пользователь успешно зарегистрирован"
+// @Failure 400 {object} map[string]interface{} "Неверные данные ввода"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Router /auth/reg [post]
 func (rh *registerHandler) Register(c *gin.Context) {
 	var input dto2.RegisterDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -50,6 +61,17 @@ func (rh *registerHandler) Register(c *gin.Context) {
 	})
 }
 
+// Login Аутентификация пользователя
+// @Summary Аутентификация пользователя
+// @Description Выполняет аутентификацию пользователя и возвращает токен
+// @Tags /auth
+// @Accept json
+// @Produce json
+// @Param login body dto2.LoginDTO true "DTO для аутентификации пользователя"
+// @Success 200 {object} map[string]interface{} "Токен успешно получен"
+// @Failure 400 {object} map[string]interface{} "Неверные данные ввода"
+// @Failure 500 {object} map[string]interface{} "Внутренняя ошибка сервера"
+// @Router /auth [post]
 func (rh *registerHandler) Login(c *gin.Context) {
 	var input dto2.LoginDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
