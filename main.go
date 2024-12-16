@@ -5,7 +5,7 @@ import (
 	"MireaPR4/database/models"
 	"MireaPR4/database/repositories"
 	"MireaPR4/database/seeders"
-	_ "MireaPR4/docs"
+	"MireaPR4/docs"
 	"MireaPR4/http/controllers"
 	addressHandlers "MireaPR4/http/handlers/address"
 	categoryHandlers "MireaPR4/http/handlers/category"
@@ -38,7 +38,6 @@ import (
 // @contact.email  support@swagger.io
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-// @host      85.193.82.54:8080
 // @BasePath  /
 // @securityDefinitions.apikey BearerAuth
 // @in header
@@ -53,6 +52,9 @@ func main() {
 		log.Fatal("Can't load config " + err.Error())
 		return
 	}
+
+	//Подключаем хост в документацию
+	docs.SwaggerInfo.Host = config.GetActualHost() + ":" + strconv.Itoa(cfg.App.Port)
 
 	//Подключаем ключ jwt
 	jwt.InitJWTSecret(cfg.JWT.Secret)
