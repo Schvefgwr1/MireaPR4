@@ -1,289 +1,174 @@
 package main
 
 import (
+	config "MireaPR4/configs"
+	"MireaPR4/database/models"
+	"MireaPR4/database/repositories"
+	"MireaPR4/database/seeders"
+	_ "MireaPR4/docs"
+	"MireaPR4/http/controllers"
+	addressHandlers "MireaPR4/http/handlers/address"
+	categoryHandlers "MireaPR4/http/handlers/category"
+	employeeHandlers "MireaPR4/http/handlers/employee"
+	orderHandlers "MireaPR4/http/handlers/order"
+	paymentHandlers "MireaPR4/http/handlers/payment"
+	productHandlers "MireaPR4/http/handlers/product"
+	registerHandlers "MireaPR4/http/handlers/register"
+	roleHandlers "MireaPR4/http/handlers/role"
+	shipmentHandlers "MireaPR4/http/handlers/shipment"
+	taskspackage "MireaPR4/http/handlers/tasks"
+	"MireaPR4/http/jwt"
+	"MireaPR4/http/middlewares"
 	"fmt"
-	"math"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"log"
+	"strconv"
 )
 
+// @title           Market API
+// @version         1.0
+// @description     This is a sample server.
+// @termsOfService  http://swagger.io/terms/
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+// @host      localhost:8080
+// @BasePath  /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @tokenUrl /auth
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
-	var taskId, moduleId int
-	fmt.Println("Введите номер модуля")
-	fmt.Scanf("%d\n", &moduleId)
-	fmt.Println("Введите номер задачи")
-	fmt.Scanf("%d\n", &taskId)
-	xy := fmt.Sprintf("%d_%d", moduleId, taskId)
-	switch xy {
-	case "1_1":
-		task1_1()
-	case "1_2":
-		task1_2()
-	case "1_3":
-		task1_3()
-	case "1_4":
-		task1_4()
-	case "1_5":
-		task1_5()
-	case "2_1":
-		task2_1()
-	case "2_2":
-		task2_2()
-	case "2_3":
-		task2_3()
-	case "2_4":
-		task2_4()
-	case "2_5":
-		task2_5()
-	case "3_1":
-		task3_1()
-	case "3_2":
-		task3_2()
-	case "3_3":
-		task3_3()
-	case "3_4":
-		task3_4()
-	case "3_5":
-		task3_5()
-
-	default:
-		fmt.Printf("%d задача в модуле %d не найдена\n", taskId, moduleId)
-
-	}
-}
-
-func task1_1() {
-	fmt.Println("Enter a 4-th value")
-	var number int
-	fmt.Scanf("%d", &number)
-	res := number/1000 + number%1000/100 + number%100/10 + number%10
-	fmt.Println(res)
-}
-
-func task1_2() {
-	var syst string
-	var temp float32
-	fmt.Println("Enter a base temperature system: C/F")
-	fmt.Scanf("%s", &syst)
-	fmt.Println(syst)
-	switch syst {
-	case "C":
-		fmt.Println("Enter a value in Celsius")
-		fmt.Scanf("%f", &temp)
-		fmt.Printf("Temperature in Fahrenheit: %.2f\n", temp*1.8+32)
-	case "F":
-		fmt.Println("Enter a value in Fahrenheit")
-		fmt.Scanf("%f", &temp)
-		fmt.Printf("Temperature in Celsia: %.2f\n", (temp-32)/1.8)
-	default:
-		fmt.Println("Incorrect system, please restart the program and retry entering")
-	}
-}
-
-func task1_3() {
-	var length int
-	var number float32
-	fmt.Println("Enter a length of array:")
-	fmt.Scanf("%d", &length)
-	arr := make([]float32, length)
-	for i := 0; i < length; i++ {
-		fmt.Println("Enter a number of array: ")
-		fmt.Scanf("%f", &number)
-		arr[i] = number * 2
-	}
-	fmt.Println("Array: ", arr)
-}
-
-func task1_4() {
-	var str string
-	flag := false
-	for !flag {
-		fmt.Println("Enter a new part of string or \"end\" for end of program")
-		var partOfStr string
-		fmt.Scanf("%s", &partOfStr)
-		if partOfStr == "end" {
-			flag = true
-		} else {
-			str += partOfStr
-			str += " "
-		}
-	}
-	fmt.Println("String: ", str)
-}
-
-type Point struct {
-	x float64
-	y float64
-}
-
-func (p Point) DistanceTo(other *Point) float64 {
-	return math.Sqrt(math.Pow(other.x-p.x, 2) + math.Pow(other.y-p.y, 2))
-}
-
-func task1_5() {
-	p1 := Point{x: 0, y: 0}
-	p2 := Point{x: 0, y: 0}
-	fmt.Println("Введите x и y в формате: x_1 y_1")
-	fmt.Scanf("%f %f", &p1.x, &p1.y)
-	fmt.Println("Введите x и y в формате: x_2 y_2")
-	fmt.Scanf("%f %f", &p2.x, &p2.y)
-	distance := p1.DistanceTo(&p2)
-	fmt.Printf("Расстояние между точками: %.2f\n", distance)
-}
-
-func task2_1() {
-	var num int
-	fmt.Println("Введите число")
-	fmt.Scanf("%d", &num)
-	if num%2 == 0 {
-		fmt.Println("Четное")
-	} else {
-		fmt.Println("Нечетное")
-	}
-}
-
-func task2_2() {
-	var year int
-	fmt.Println("Введите номер года")
-	fmt.Scanf("%d", &year)
-	if (year%4 == 0 && year%100 != 0) || year%400 == 0 {
-		fmt.Println("Високосный")
-	} else {
-		fmt.Println("Не високосный")
-	}
-}
-
-func task2_3() {
-	var x1, x2, x3 float32
-	fmt.Println("Введите три числа через пробел")
-	fmt.Scanf("%f %f, %f", &x1, &x2, &x3)
-	fmt.Println("Наибольшее число")
-	if x1 >= x2 && x1 >= x3 {
-		fmt.Println(x1)
-	} else if x2 >= x1 && x2 >= x3 {
-		fmt.Println(x2)
-	} else {
-		fmt.Println(x3)
-	}
-}
-
-func task2_4() {
-	var age int
-	fmt.Println("Введите возраст")
-	fmt.Scanf("%d", &age)
-	fmt.Println("Возрастная группа: ")
-	switch {
-	case age < 12:
-		fmt.Println("Ребенок")
-	case age >= 12 && age < 18:
-		fmt.Println("Подросток")
-	case age >= 18 && age < 65:
-		fmt.Println("Взрослый")
-	default:
-		fmt.Println("Пожилой")
-	}
-}
-
-func task2_5() {
-	var num int
-	fmt.Println("Введите число")
-	fmt.Scanf("%d", &num)
-	if num%5 == 0 && num%3 == 0 {
-		fmt.Println("Делится")
-	} else {
-		fmt.Println("Не делится")
-	}
-}
-
-func factorial(n int) int {
-	if n == 0 {
-		return 1
-	}
-	return n * factorial(n-1)
-}
-
-func task3_1() {
-	var n int
-	fmt.Println("Введите число:")
-	fmt.Scanf("%d", &n)
-	result := factorial(n)
-	fmt.Printf("Факториал числа %d равен %d\n", n, result)
-}
-
-func fibonacci(n int) []int {
-	fib := make([]int, n)
-	if n >= 1 {
-		fib[0] = 0
-	}
-	if n >= 2 {
-		fib[1] = 1
-	}
-	for i := 2; i < n; i++ {
-		fib[i] = fib[i-1] + fib[i-2]
-	}
-	return fib
-}
-
-func task3_2() {
-	var n int
-	fmt.Println("Введите число:")
-	fmt.Scanf("%d", &n)
-	result := fibonacci(n)
-	fmt.Println("Первые ", n, " чисел Фибонначи: ", result)
-}
-
-func readArray() *[]int {
-	var arr []int
-	var elem, n int
-	fmt.Print("Введите количество чисел в масиве: ")
-	fmt.Scan(&n)
-	fmt.Println("Введите исходный массив:")
-	for i := 0; i < n; i++ {
-		fmt.Scan(&elem)
-		arr = append(arr, elem)
-	}
-	return &arr
-}
-
-func task3_3() {
-	arr := *readArray()
-	for i := 0; i < len(arr)/2; i++ {
-		arr[i], arr[len(arr)-1-i] = arr[len(arr)-1-i], arr[i]
+	//Подключаем конфиг
+	cfg, err := config.LoadConfig("configs/config.yaml")
+	if err != nil {
+		log.Fatal("Can't load config " + err.Error())
+		return
 	}
 
-	fmt.Println("Перевернутый массив:", arr)
-}
+	//Подключаем ключ jwt
+	jwt.InitJWTSecret(cfg.JWT.Secret)
 
-func task3_4() {
-	var n int
-	fmt.Print("Введите число для поиска простых чисел: ")
-	fmt.Scan(&n)
+	// Настроим параметры подключения
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
+		cfg.Database.Host, cfg.Database.User, cfg.Database.Password, cfg.Database.Name, cfg.Database.Port,
+	)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	//db = db.Debug()
 
-	isPrime := func(num int) bool {
-		if num < 2 {
-			return false
-		}
-		for i := 2; i*i <= num; i++ {
-			if num%i == 0 {
-				return false
-			}
-		}
-		return true
+	if err != nil {
+		panic("failed to connect to database")
 	}
 
-	primes := []int{}
-	for i := 2; i <= n; i++ {
-		if isPrime(i) {
-			primes = append(primes, i)
-		}
+	// Запускаем миграцию для создания таблиц
+	if err := db.AutoMigrate(
+		&models.Role{},
+		&models.Permission{},
+		&models.UserStatus{},
+		&models.User{},
+		&models.Category{},
+		&models.Product{},
+		&models.OrderStatus{},
+		&models.Order{},
+		&models.OrderItem{},
+		&models.PaymentStatus{},
+		&models.Payment{},
+		&models.ShipmentStatus{},
+		&models.Address{},
+		&models.Shipment{},
+		&models.Employee{},
+	); err != nil {
+		panic("failed to migrate database")
 	}
+	//Заполняем БД тестовыми данными
+	seeders.SeedData(db)
 
-	fmt.Println("Простые числа до", n, ":", primes)
-}
+	// Инициализация репозиториев
+	userRepo := repositories.NewUserRepository(db)
+	orderRepo := repositories.NewOrderRepository(db)
+	productRepo := repositories.NewProductRepository(db)
+	orderStatusRepo := repositories.NewOrderStatusRepository(db)
+	roleRepo := repositories.NewRoleRepository(db)
+	permissionRepo := repositories.NewPermissionRepository(db)
+	categoryRepo := repositories.NewCategoryRepository(db)
+	addressRepo := repositories.NewAddressRepository(db)
+	employeeRepo := repositories.NewEmployeeRepository(db)
+	paymentRepo := repositories.NewPaymentRepository(db)
+	shipmentRepo := repositories.NewShipmentRepository(db)
+	shipmentStatusRepo := repositories.NewShipmentStatusRepository(db)
+	orderItemRepo := repositories.NewOrderItemRepository(db)
+	paymentStatusRepo := repositories.NewPaymentStatusRepository(db)
 
-func task3_5() {
-	arr := *readArray()
-	sum := 0
-	for _, num := range arr {
-		sum += num
-	}
-	fmt.Println("Сумма чисел в массиве:", sum)
+	//Инициализация middlewares
+	middlewares.InitDB(&userRepo)
+
+	//Инициализация order контроллеров
+	orderController := controllers.NewOrderController(
+		orderRepo,
+		userRepo,
+		orderStatusRepo,
+		productRepo,
+		orderItemRepo,
+	)
+	orderHandler := orderHandlers.NewOrderHandler(orderController)
+
+	//Инициализация register контроллеров
+	registerController := controllers.NewRegisterController(userRepo)
+	registerHandler := registerHandlers.NewRegisterHandler(registerController)
+
+	//Инициализация roles контроллеров
+	roleController := controllers.NewRoleController(roleRepo, permissionRepo)
+	roleHandler := roleHandlers.NewRoleHandler(roleController)
+
+	//Инициализация category контроллеров
+	categoryController := controllers.NewCategoryController(categoryRepo)
+	categoryHandler := categoryHandlers.NewCategoryHandler(categoryController)
+
+	//Инициализация address контроллеров
+	addressController := controllers.NewAddressController(addressRepo)
+	addressHandler := addressHandlers.NewAddressHandler(addressController)
+
+	//Инициализация employee контроллеров
+	employeeController := controllers.NewEmployeeController(employeeRepo)
+	employeeHandler := employeeHandlers.NewEmployeeHandler(employeeController)
+
+	//Инициализация payment контроллеров
+	paymentController := controllers.NewPaymentController(paymentRepo, paymentStatusRepo)
+	paymentHandler := paymentHandlers.NewPaymentHandler(paymentController)
+
+	//Инициализация shipment контроллеров
+	shipmentController := controllers.NewShipmentController(shipmentRepo, orderRepo, shipmentStatusRepo)
+	shipmentHandler := shipmentHandlers.NewShipmentHandler(shipmentController)
+
+	//Инициализация product контроллеров
+	productController := controllers.NewProductController(productRepo, categoryRepo)
+	productHandler := productHandlers.NewProductHandler(productController)
+
+	// Регистрируем роуты и запускаем сервер
+	r := gin.Default()
+
+	// Настройка маршрута для Swagger
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	orderHandler.RegisterRoutes(r)
+	registerHandler.RegisterRoutes(r)
+	roleHandler.RegisterRoutes(r)
+	categoryHandler.RegisterRoutes(r)
+	addressHandler.RegisterRoutes(r)
+	employeeHandler.RegisterRoutes(r)
+	paymentHandler.RegisterRoutes(r)
+	shipmentHandler.RegisterRoutes(r)
+	productHandler.RegisterRoutes(r)
+	taskspackage.RegisterRoutes(r)
+
+	_ = r.Run(":" + strconv.Itoa(cfg.App.Port))
 }

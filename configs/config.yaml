@@ -1,0 +1,10 @@
+database:
+  host: localhost
+  user: postgres
+  password: postgres
+  name: mirea_books
+  port: 5432
+app:
+  port: 8080
+jwt:
+  secret: my_secret_key
