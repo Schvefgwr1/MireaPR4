@@ -64,3 +64,11 @@ func overrideFromEnv(config *Config) {
 		}
 	}
 }
+
+func GetActualHost() string {
+	if env := os.Getenv("SWAGGER_HOST"); env != "" {
+		return env
+	} else {
+		return "localhost"
+	}
+}
